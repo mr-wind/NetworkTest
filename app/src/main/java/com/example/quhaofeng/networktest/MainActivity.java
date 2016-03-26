@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xmlpull.v1.XmlPullParser;
@@ -67,7 +69,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 HttpURLConnection connection = null;
                 try{
-                    URL url = new URL("http://192.168.191.1/get_data.xml");
+                    //URL url = new URL("http://192.168.191.1/get_data.xml");
+                    URL url = new URL("http://192.168.191.1/get_data.json");
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.setConnectTimeout(8000);
@@ -80,9 +83,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         response.append(line);
                     }
 
-                    parseXMLWithSAX(response.toString());
+                    parseJSONWithJSONObject(response.toString());//Json
 
-                    //parseXMLWithPull(response.toString());
+                    //parseXMLWithSAX(response.toString());//SAX
+
+                    //parseXMLWithPull(response.toString());//Pull
 
                     //用Message对象是因为在子线程里面无法进行UI操作
                     /*Message message = new Message();
@@ -98,6 +103,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }).start();
+    }
+
+    private void parseJSONWithJSONObject(String jsonData){
+        try {
+            JSONArray jsonArray = new JSONArray(jsonData);
+            for (int i = 0; i < jsonArray.length(); i++){
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String id = jsonObject.getString("id");
+                String name = jsonObject.getString("name");
+                String version = jsonObject.getString("version");
+                Log.w("MainActivity", "id is " + id);
+                Log.w("MainActivity", "name is " + name);
+                Log.w("MainActivity", "version is " + version);
+            }
+            Log.w("MainActivity","" + jsonArray.length());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void parseXMLWithSAX(String xmlData) {
