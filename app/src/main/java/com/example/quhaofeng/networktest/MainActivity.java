@@ -62,11 +62,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.send_request){
-            sendRequestWithHttpURLConnection();
+            //sendRequestWithHttpURLConnection();
+            String address = "http://192.168.191.1/get_data.json";
+
+            HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
+                @Override
+                public void onFinish(String response) {
+                    parseJSONWithGSON(response);//处理返回来的数据response
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();//处理错误信息
+                }
+            });
         }
     }
 
 
+    /**
+    * 发送请求
+    * */
     private void sendRequestWithHttpURLConnection(){
         new Thread(new Runnable() {
             @Override
@@ -87,7 +103,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         response.append(line);
                     }
 
-                    parseJSONWithGSON(response.toString());
+
+                    //parseJSONWithGSON(response.toString());
 
                     //parseJSONWithJSONObject(response.toString());//Json
 
